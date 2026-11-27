@@ -1,0 +1,46 @@
+x-app: &app
+  image: auto-oncall
+  env_file:
+    - path: .env.example
+    - path: .env # overrides the example values when present
+      required: false
+  environment:
+    REDIS_URL: redis://redis:6379/0
+    CHROMA_PATH: /data/chroma
+  volumes:
+    - chroma:/data
+  depends_on:
+    redis:
+      condition: service_healthy
+
+services:
+  redis:
+    image: redis:7
+    command: ["redis-server", "--appendonly", "yes"] # queued tasks survive a restart
+    volumes:
+      - redis:/data
+    ports:
+      - "127.0.0.1:6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      retries: 10
+
+  api:
+    <<: *app
+    build: . # builds the image the worker reuses
+    ports:
+      - "127.0.0.1:8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      retries: 10
+
+  worker:
+    <<: *app
+    pull_policy: never
+    command: ["celery", "-A", "app.worker.celery_app", "worker", "--loglevel=info", "--concurrency=2"]
+
+volumes:
+  chroma:
+  redis:
