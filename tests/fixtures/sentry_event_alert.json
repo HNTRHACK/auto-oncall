@@ -1,0 +1,37 @@
+{
+  "action": "triggered",
+  "actor": {"id": "sentry", "name": "Sentry", "type": "application"},
+  "installation": {"uuid": "a8e5d37a-696c-4c54-adb5-b3f28d64c7de"},
+  "data": {
+    "event": {
+      "event_id": "e4874d664c3540c1a32eab185f12c5ab",
+      "issue_id": "1117540176",
+      "project": 1,
+      "platform": "python",
+      "environment": "production",
+      "title": "AttributeError: 'NoneType' object has no attribute 'email'",
+      "culprit": "payments.processor in charge",
+      "datetime": "2026-11-26T21:00:00.000000Z",
+      "web_url": "https://acme.sentry.io/issues/1117540176/events/e4874d664c3540c1a32eab185f12c5ab/",
+      "tags": [["environment", "production"], ["level", "error"], ["service", "payments-api"], ["handled", "no"]],
+      "exception": {
+        "values": [
+          {
+            "type": "AttributeError",
+            "value": "'NoneType' object has no attribute 'email' (order 48213)",
+            "mechanism": {"type": "generic", "handled": false},
+            "stacktrace": {
+              "frames": [
+                {"filename": "gunicorn/workers/sync.py", "abs_path": "/usr/lib/python3/site-packages/gunicorn/workers/sync.py", "lineno": 135, "function": "handle", "in_app": false, "module": "gunicorn.workers.sync"},
+                {"filename": "app/payments/views.py", "abs_path": "/srv/app/payments/views.py", "lineno": 31, "function": "post", "in_app": true, "module": "app.payments.views"},
+                {"filename": "app/payments/processor.py", "abs_path": "/srv/app/payments/processor.py", "lineno": 7, "function": "charge", "in_app": true, "module": "app.payments.processor"}
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "triggered_rule": "New crash in payments",
+    "issue_alert": {"title": "New crash in payments", "settings": []}
+  }
+}
